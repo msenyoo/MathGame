@@ -25,5 +25,12 @@
   },
   "jest": {
     "preset": "react-native"
-  }
+  },
+  "keywords": [
+    "game",
+    "MathGame",
+    "react",
+    "react-native",
+    "android"
+  ]
 }
