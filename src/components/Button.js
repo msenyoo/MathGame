@@ -24,12 +24,13 @@ const GButton = (props) => {
 const styles = StyleSheet.create({
   number: {
     color: 'white',
-    backgroundColor: 'steelblue',
+    backgroundColor: 'rgb(119, 167, 239)',
     marginHorizontal: 15,
     marginVertical: 25,
     fontSize: 35,
-    width: 100,
+    width: 80,
     textAlign: 'center',
+    borderRadius: 50,
   },
   disabled: {
     opacity: 0.3,

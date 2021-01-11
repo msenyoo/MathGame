@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {Text, View, StyleSheet, Button} from 'react-native';
+import {Text, View, StyleSheet, Button, ScrollView} from 'react-native';
 import GButton from './Button';
 import shuffle from 'lodash.shuffle';
 
+const Separator = () => <View style={styles.separator} />;
 export class Game extends Component {
   state = {
     selectedIds: [],
@@ -18,6 +19,8 @@ export class Game extends Component {
     .slice(0, this.props.count - 2)
     .reduce((acc, cur) => acc + cur, 0);
   shuffledNumbers = shuffle(this.randomNumber);
+
+  sumSelected = 0;
 
   componentDidMount() {
     this.intervalId = setInterval(() => {
@@ -60,19 +63,19 @@ export class Game extends Component {
     }
   }
   calcGameStatus = (nextState) => {
-    const sumSelected = nextState.selectedIds.reduce((acc, curr) => {
+    this.sumSelected = nextState.selectedIds.reduce((acc, curr) => {
       return acc + this.shuffledNumbers[curr];
     }, 0);
     if (nextState.remainingSeconds === 0) {
       return 'LOST';
     }
-    if (sumSelected < this.target) {
+    if (this.sumSelected < this.target) {
       return 'PLAYING';
     }
-    if (sumSelected === this.target) {
+    if (this.sumSelected === this.target) {
       return 'WON';
     }
-    if (sumSelected > this.target) {
+    if (this.sumSelected > this.target) {
       return 'LOST';
     }
   };
@@ -80,10 +83,22 @@ export class Game extends Component {
   render() {
     const gameStatus = this.gameStatus;
     return (
-      <View style={styles.container}>
-        <Text style={[styles.banner, styles[`STATUS_${gameStatus}`]]}>
+      <ScrollView style={styles.container}>
+        <Text style={styles.banner}>Mind Game</Text>
+        <Separator />
+        <Text style={[styles.target, styles[`STATUS_${gameStatus}`]]}>
           {this.target}
         </Text>
+        <View style={[styles.timerContainer]}>
+          <Text style={styles.timer}>
+            {this.gameStatus == 'PLAYING'
+              ? this.state.remainingSeconds + ' remaining'
+              : this.gameStatus == 'WON'
+              ? 'Congratulations!'
+              : 'Better luck next time!'}
+          </Text>
+        </View>
+
         <View style={[styles.container, styles.buttonContainer]}>
           {this.shuffledNumbers.map((val, index) => (
             <GButton
@@ -97,14 +112,8 @@ export class Game extends Component {
             />
           ))}
         </View>
-        <View style={[styles.timerContainer]}>
-          {this.gameStatus == 'PLAYING' && (
-            <Text style={styles.timer}>
-              {this.state.remainingSeconds ? this.state.remainingSeconds : ''}
-            </Text>
-          )}
-        </View>
-        <View style={styles.container}>
+
+        <View>
           {this.gameStatus !== 'PLAYING' && (
             <Button
               style={styles.button}
@@ -113,7 +122,7 @@ export class Game extends Component {
             />
           )}
         </View>
-      </View>
+      </ScrollView>
     );
   }
 }
@@ -121,51 +130,53 @@ export class Game extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'rgb(236, 237, 234)',
   },
   banner: {
+    fontSize: 30,
+    color: 'black',
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  target: {
     fontSize: 50,
     backgroundColor: 'skyblue',
     textAlign: 'center',
-    margin: 50,
+    margin: 20,
+    borderRadius: 5,
   },
   button: {
     height: 100,
   },
   buttonContainer: {
-    flex: 2,
+    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    alignItems: 'center',
     flexWrap: 'wrap',
+    backgroundColor: 'rgb(242, 246, 252)',
   },
-  timerContainer: {
-    fontSize: 50,
-    flexDirection: 'row',
-    textAlign: 'center',
-    justifyContent: 'space-around',
-    flexWrap: 'wrap',
-    marginTop: 50,
-  },
+  timerContainer: {marginBottom: 10},
   timer: {
-    color: 'white',
-    backgroundColor: 'red',
-    paddingTop: 7,
-    fontSize: 25,
-    width: 50,
-    height: 50,
+    fontSize: 20,
     textAlign: 'center',
-    borderRadius: 60,
     alignContent: 'center',
   },
+  separator: {
+    marginVertical: 8,
+    borderBottomColor: '#737373',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
   STATUS_PLAYING: {
-    backgroundColor: '#bbb',
+    backgroundColor: 'rgb(201, 199, 212)',
   },
 
   STATUS_WON: {
-    backgroundColor: 'green',
+    backgroundColor: 'rgb(158, 240, 26)',
   },
 
   STATUS_LOST: {
-    backgroundColor: 'red',
+    backgroundColor: 'rgb(238, 150, 75)',
   },
 });
 
